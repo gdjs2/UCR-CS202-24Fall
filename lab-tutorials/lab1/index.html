@@ -110,9 +110,14 @@
 <h2 id="compile-run">Compile &amp; Run</h2>
 <p>Before you start modifying the code, you need to know how to compile and run the code of xv6. As we introduced before, we need a risc-v <a href="https://en.wikipedia.org/wiki/Toolchain">toolchain</a> to compile the source code and a <a href="https://en.wikipedia.org/wiki/RISC-V">risc-v</a> emulator to provide the execution environment. </p>
 <p>Prior to stepping into installing the risc-v toolchain and emulator, we would suggest you finishing this project on a Unix-like environment, which includes all Linux distribution (e.g., Ubuntu, Arch, ...), macOS and so on. If you are using Windows, you can have a Linux subsystem running on your local machine though <a href="https://learn.microsoft.com/en-us/windows/wsl/install">Windows Subsystem Linux, WSL</a>. In order to fulfill the some virtualization requirements, you should try WSL 2 instead of WSL. </p>
-<p>We would provide the command line &amp; instructions based on a Ubuntu 24.04. For other Linux distribution and macOS, please refer to your own Package Management System (like pacman for arch and brew for macOS). </p>
+<p>We would provide the tested command line &amp; instructions based on a Ubuntu 24.04. For other Linux distribution and macOS, please refer to your own Package Management System (like pacman for arch and brew for macOS) for issues you may meet.</p>
 <h3 id="tools">Tools</h3>
+<p>Run the following command in your command line:</p>
+<h4 id="debian-or-ubuntu">Debian or Ubuntu</h4>
 <pre><code class="language-bash">sudo apt-get install git build-essential gdb-multiarch qemu-system-misc gcc-riscv64-linux-gnu binutils-riscv64-linux-gnu 
+</code></pre>
+<h4 id="arch-linux">Arch Linux</h4>
+<pre><code class="language-bash">sudo pacman -S riscv64-linux-gnu-binutils riscv64-linux-gnu-gcc riscv64-linux-gnu-gdb qemu-emulators-full
 </code></pre></div>
             </div>
         </div>
