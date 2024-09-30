@@ -114,11 +114,32 @@
 <h3 id="tools">Tools</h3>
 <p>Run the following command in your command line:</p>
 <h4 id="debian-or-ubuntu">Debian or Ubuntu</h4>
-<pre><code class="language-bash">sudo apt-get install git build-essential gdb-multiarch qemu-system-misc gcc-riscv64-linux-gnu binutils-riscv64-linux-gnu 
+<pre><code class="language-bash">$ sudo apt-get install git build-essential gdb-multiarch qemu-system-misc gcc-riscv64-linux-gnu binutils-riscv64-linux-gnu 
 </code></pre>
 <h4 id="arch-linux">Arch Linux</h4>
-<pre><code class="language-bash">sudo pacman -S riscv64-linux-gnu-binutils riscv64-linux-gnu-gcc riscv64-linux-gnu-gdb qemu-emulators-full
-</code></pre></div>
+<pre><code class="language-bash">$ sudo pacman -S riscv64-linux-gnu-binutils riscv64-linux-gnu-gcc riscv64-linux-gnu-gdb qemu-emulators-full
+</code></pre>
+<h4 id="macos">macOS</h4>
+<p>Install developer tools if you haven't:</p>
+<pre><code class="language-bash">$ xcode-select --install
+</code></pre>
+<p>Next, install <a href="https://brew.sh">Homebrew</a>, a package manager for macOS if you haven't:</p>
+<pre><code class="language-bash">$ /bin/bash -c &quot;$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)&quot;
+</code></pre>
+<p>Next, install the RISC-V compiler <a href="https://github.com/riscv-software-src/homebrew-riscv">toolchain</a>:</p>
+<pre><code class="language-bash">$ brew tap riscv/riscv
+$ brew install riscv-tools
+</code></pre>
+<p>The brew formula may not link into /usr/local. You will need to update your shell's rc file (e.g. <a href="https://www.gnu.org/software/bash/manual/html_node/Bash-Startup-Files.html">~/.bashrc</a>) to add the appropriate directory to <a href="https://www.linfo.org/path_env_var.html">$PATH</a>.</p>
+<p>Finally install QEMU:</p>
+<pre><code class="language-bash">$ brew install qemu
+</code></pre>
+<h3 id="testing-your-installation">Testing your Installation</h3>
+<p>Run the following command to see whether it can give you the version number for the programs:</p>
+<pre><code class="language-bash">$ qemu-system-riscv64 --version
+QEMU emulator version 8.2.2 (Debian 1:8.2.2+ds-0ubuntu1.2)
+</code></pre>
+<p>```</p></div>
             </div>
         </div>
 
