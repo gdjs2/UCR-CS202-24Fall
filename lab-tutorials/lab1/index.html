@@ -4,27 +4,27 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="None">
         
-        <link rel="canonical" href="http://gdjs2.cn/UCR-CS202-24Fall/">
-        <link rel="shortcut icon" href="img/favicon.ico">
-        <title>CS202 Advanced Operating System - Lab Session</title>
-        <link href="css/bootstrap.min.css" rel="stylesheet">
-        <link href="css/fontawesome.min.css" rel="stylesheet">
-        <link href="css/brands.min.css" rel="stylesheet">
-        <link href="css/solid.min.css" rel="stylesheet">
-        <link href="css/v4-font-face.min.css" rel="stylesheet">
-        <link href="css/base.css" rel="stylesheet">
+        
+        <link rel="canonical" href="http://gdjs2.cn/UCR-CS202-24Fall/lab-tutorials/lab1/">
+        <link rel="shortcut icon" href="../../img/favicon.ico">
+        <title>Lab 1 - System Call Implementation - CS202 Advanced Operating System - Lab Session</title>
+        <link href="../../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../../css/brands.min.css" rel="stylesheet">
+        <link href="../../css/solid.min.css" rel="stylesheet">
+        <link href="../../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../../css/base.css" rel="stylesheet">
         <link id="hljs-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" >
         <link id="hljs-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css" disabled>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
         <script>hljs.highlightAll();</script> 
     </head>
 
-    <body class="homepage">
+    <body>
         <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
             <div class="container">
-                <a class="navbar-brand" href=".">CS202 Advanced Operating System - Lab Session</a>
+                <a class="navbar-brand" href="../..">CS202 Advanced Operating System - Lab Session</a>
                 <!-- Expander button -->
                 <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -35,14 +35,14 @@
                         <!-- Main navigation -->
                         <ul class="nav navbar-nav">
                             <li class="nav-item">
-                                <a href="." class="nav-link active" aria-current="page">CS202 - Advanced Operating System - Lab Session - 24 Fall</a>
+                                <a href="../.." class="nav-link">CS202 - Advanced Operating System - Lab Session - 24 Fall</a>
                             </li>
                             <li class="nav-item dropdown">
-                                <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"  aria-expanded="false">Lab tutorials</a>
+                                <a href="#" class="nav-link dropdown-toggle active" aria-current="page" role="button" data-bs-toggle="dropdown"  aria-expanded="false">Lab tutorials</a>
                                 <ul class="dropdown-menu">
                                     
 <li>
-    <a href="lab-tutorials/lab1/" class="dropdown-item">Lab 1 - System Call Implementation</a>
+    <a href="./" class="dropdown-item active" aria-current="page">Lab 1 - System Call Implementation</a>
 </li>
                                 </ul>
                             </li>
@@ -55,12 +55,12 @@
                             </a>
                         </li>
                             <li class="nav-item">
-                                <a rel="prev" class="nav-link disabled">
+                                <a rel="prev" href="../.." class="nav-link">
                                     <i class="fa fa-arrow-left"></i> Previous
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a rel="next" href="lab-tutorials/lab1/" class="nav-link">
+                                <a rel="next" class="nav-link disabled">
                                     Next <i class="fa fa-arrow-right"></i>
                                 </a>
                             </li>
@@ -82,21 +82,13 @@
     <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
         <ul class="nav flex-column">
             
-            <li class="nav-item" data-bs-level="1"><a href="#cs202-advanced-operating-system-lab-session-24-fall" class="nav-link">CS202 - Advanced Operating System - Lab Session - 24 Fall</a>
+            <li class="nav-item" data-bs-level="1"><a href="#lab-1-system-call-implementation" class="nav-link">Lab 1 - System Call Implementation</a>
               <ul class="nav flex-column">
-            <li class="nav-item" data-bs-level="2"><a href="#basic-info" class="nav-link">Basic Info</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-            <li class="nav-item" data-bs-level="2"><a href="#the-composition-of-laboratory-session" class="nav-link">The Composition of Laboratory Session</a>
+            <li class="nav-item" data-bs-level="2"><a href="#before-start" class="nav-link">Before Start</a>
               <ul class="nav flex-column">
               </ul>
             </li>
-            <li class="nav-item" data-bs-level="2"><a href="#lab-tutorial" class="nav-link">Lab Tutorial</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-            <li class="nav-item" data-bs-level="2"><a href="#additional-links" class="nav-link">Additional Links</a>
+            <li class="nav-item" data-bs-level="2"><a href="#compile-run" class="nav-link">Compile &amp; Run</a>
               <ul class="nav flex-column">
               </ul>
             </li>
@@ -107,31 +99,21 @@
 </div></div>
                     <div class="col-md-9" role="main">
 
-<h1 id="cs202-advanced-operating-system-lab-session-24-fall">CS202 - Advanced Operating System - Lab Session - 24 Fall</h1>
-<h2 id="basic-info">Basic Info</h2>
-<p>Hi👋, welcome to the course page for <em>CS202 Advanced Operating System, Fall 2024</em> for UC Riverside, whose lecture is hosted by Prof. <a href="https://www.cs.ucr.edu/~heng/">Heng Yin</a>. The laboratory section would be hosted by me, Zhaoqi Xiao. </p>
-<p>Although we do not have an official <strong>Lab Session</strong>, you can try getting most of the help you need to complete your project from this website as well as addition documents provided here, or, from office hours. </p>
-<p>BTW, the time for my <strong>office hours</strong> would be:</p>
+<h1 id="lab-1-system-call-implementation">Lab 1 - System Call Implementation</h1>
+<h2 id="before-start">Before Start</h2>
+<p><a href="https://pdos.csail.mit.edu/6.828/2012/xv6.html">Xv6</a> is an open-source project built by MIT. It is a simple Unix-like OS for educational purpose. It has its source code published on Github and it is still maintained from time to time nowadays. In order to keep the consistency of the files you pull down, you are required to clone the XV6 files from our <a href="https://github.com/gdjs2/xv6-riscv-UCR-CS202-Fall24">forked repository</a>. </p>
+<p>As you can notice to, we use a risc-v version of xv6 here. Most of modern laptops or PCs we use are based on X86-64 or ARM. Therefore, in order to run xv6, we need an emulator, which could provide a risc-v execution environment on our local machine. </p>
+<p>We would introduce some supplementary resources for you. Feel free to check them when you meet difficulties finishing your project. </p>
 <ul>
-<li>Monday 2pm - 4pm @ <a href="https://ucr.zoom.us/j/91841068999?pwd=pgoHm11EtQ1nvmz70sfpQBTUJEDTam.1">Zoom</a></li>
-<li>Or @ WCH 110 by appointment with <a href="mailto:zxiao033@ucr.edu">email</a></li>
+<li><a href="https://pdos.csail.mit.edu/6.828/2024/">xv6 Tutorial</a></li>
 </ul>
-<h2 id="the-composition-of-laboratory-session">The Composition of Laboratory Session</h2>
-<p>We will have <strong>three</strong> projects in total for the Lab Session:</p>
-<ol>
-<li><a href="https://www.cs.ucr.edu/~heng/teaching/cs202-fall24/lab1.pdf">System Call Implementation</a></li>
-<li><a href="https://www.cs.ucr.edu/~heng/teaching/cs202-fall24/lab2.pdf">Modifying the Scheduler</a></li>
-<li><a href="https://www.cs.ucr.edu/~heng/teaching/cs202-fall24/lab3.pdf">Threads</a></li>
-</ol>
-<p>Prior to (or some time after) each Lab release, I would publish an instruction to help you get start with. Please be sure to check this website in a timely manner.</p>
-<h2 id="lab-tutorial">Lab Tutorial</h2>
-<ol>
-<li>Lab 1: <a href="">System Call Implementation Tutorial</a></li>
-</ol>
-<h2 id="additional-links">Additional Links</h2>
-<ul>
-<li><a href="https://www.cs.ucr.edu/~heng/teaching/cs202-fall24/index.html">Course websites</a></li>
-</ul></div>
+<h2 id="compile-run">Compile &amp; Run</h2>
+<p>Before you start modifying the code, you need to know how to compile and run the code of xv6. As we introduced before, we need a risc-v <a href="https://en.wikipedia.org/wiki/Toolchain">toolchain</a> to compile the source code and a <a href="https://en.wikipedia.org/wiki/RISC-V">risc-v</a> emulator to provide the execution environment. </p>
+<p>Prior to stepping into installing the risc-v toolchain and emulator, we would suggest you finishing this project on a Unix-like environment, which includes all Linux distribution (e.g., Ubuntu, Arch, ...), macOS and so on. If you are using Windows, you can have a Linux subsystem running on your local machine though <a href="https://learn.microsoft.com/en-us/windows/wsl/install">Windows Subsystem Linux, WSL</a>. In order to fulfill the some virtualization requirements, you should try WSL 2 instead of WSL. </p>
+<p>We would provide the command line &amp; instructions based on a Ubuntu 24.04. For other Linux distribution and macOS, please refer to your own Package Management System (like pacman for arch and brew for macOS). </p>
+<h3 id="tools">Tools</h3>
+<pre><code class="language-bash">sudo apt-get install git build-essential gdb-multiarch qemu-system-misc gcc-riscv64-linux-gnu binutils-riscv64-linux-gnu 
+</code></pre></div>
             </div>
         </div>
 
@@ -139,13 +121,13 @@
             <hr>
             <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
         </footer>
-        <script src="js/bootstrap.bundle.min.js"></script>
+        <script src="../../js/bootstrap.bundle.min.js"></script>
         <script>
-            var base_url = ".",
+            var base_url = "../..",
                 shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
         </script>
-        <script src="js/base.js"></script>
-        <script src="search/main.js"></script>
+        <script src="../../js/base.js"></script>
+        <script src="../../search/main.js"></script>
 
         <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -210,8 +192,3 @@
 
     </body>
 </html>
-
-<!--
-MkDocs version : 1.6.1
-Build Date UTC : 2024-09-30 18:56:16.182725+00:00
--->
