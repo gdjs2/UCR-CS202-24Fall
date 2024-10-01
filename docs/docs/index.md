@@ -23,7 +23,7 @@ Prior to (or some time after) each Lab release, I would publish an instruction t
 
 ## Lab Tutorial
 
-1. Lab 1: [System Call Implementation Tutorial - Working on it]()
+1. Lab 1: [System Call Implementation Tutorial - Working on it](lab-tutorials/lab1.md)
 
 ## Additional Links
 
