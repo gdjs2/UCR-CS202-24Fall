@@ -88,7 +88,15 @@
               <ul class="nav flex-column">
               </ul>
             </li>
-            <li class="nav-item" data-bs-level="2"><a href="#compile-run" class="nav-link">Compile &amp; Run</a>
+            <li class="nav-item" data-bs-level="2"><a href="#compile-boot" class="nav-link">Compile &amp; Boot</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#primary-instruction" class="nav-link">Primary Instruction</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#advanced-instruction" class="nav-link">Advanced Instruction</a>
               <ul class="nav flex-column">
               </ul>
             </li>
@@ -106,8 +114,9 @@
 <p>We would introduce some supplementary resources for you. Feel free to check them when you meet difficulties finishing your project. </p>
 <ul>
 <li><a href="https://pdos.csail.mit.edu/6.828/2024/">xv6 Tutorial</a></li>
+<li><a href="https://pdos.csail.mit.edu/6.828/2024/xv6/book-riscv-rev4.pdf">xv6 Book</a></li>
 </ul>
-<h2 id="compile-run">Compile &amp; Run</h2>
+<h2 id="compile-boot">Compile &amp; Boot</h2>
 <p>Before you start modifying the code, you need to know how to compile and run the code of xv6. As we introduced before, we need a risc-v <a href="https://en.wikipedia.org/wiki/Toolchain">toolchain</a> to compile the source code and a <a href="https://en.wikipedia.org/wiki/RISC-V">risc-v</a> emulator to provide the execution environment. </p>
 <p>Prior to stepping into installing the risc-v toolchain and emulator, we would suggest you finishing this project on a Unix-like environment, which includes all Linux distribution (e.g., Ubuntu, Arch, ...), macOS and so on. If you are using Windows, you can have a Linux subsystem running on your local machine though <a href="https://learn.microsoft.com/en-us/windows/wsl/install">Windows Subsystem Linux, WSL</a>. In order to fulfill the some virtualization requirements, you should try WSL 2 instead of WSL. </p>
 <p>We would provide the tested command line &amp; instructions based on a Ubuntu 24.04. For other Linux distribution and macOS, please refer to your own Package Management System (like pacman for arch and brew for macOS) for issues you may meet.</p>
@@ -134,12 +143,184 @@ $ brew install riscv-tools
 <p>Finally install QEMU:</p>
 <pre><code class="language-bash">$ brew install qemu
 </code></pre>
-<h3 id="testing-your-installation">Testing your Installation</h3>
+<h4 id="testing-your-installation">Testing your Installation</h4>
 <p>Run the following command to see whether it can give you the version number for the programs:</p>
 <pre><code class="language-bash">$ qemu-system-riscv64 --version
 QEMU emulator version 8.2.2 (Debian 1:8.2.2+ds-0ubuntu1.2)
+...
 </code></pre>
-<p>```</p></div>
+<p>And at least one RISC-V version of GCC:</p>
+<pre><code class="language-bash">$ riscv64-linux-gnu-gcc --version
+riscv64-linux-gnu-gcc (Ubuntu 13.2.0-23ubuntu4) 13.2.0
+...
+</code></pre>
+<pre><code class="language-bash">$ riscv64-unknown-elf-gcc --version
+</code></pre>
+<pre><code class="language-bash">$ riscv64-unknown-linux-gnu-gcc --version
+</code></pre>
+<h3 id="compile">Compile</h3>
+<p>Fetch the source code from <a href="https://github.com/gdjs2/xv6-riscv-UCR-CS202-Fall24">our xv6 repository</a>:</p>
+<pre><code class="language-bash">$ git clone https://github.com/gdjs2/xv6-riscv-UCR-CS202-Fall24.git
+Cloning into 'xv6-riscv-UCR-CS202-Fall24'...
+</code></pre>
+<p>Change directory to the one containing xv6.</p>
+<pre><code class="language-bash">$ cd xv6-riscv-UCR-CS202-Fall24
+</code></pre>
+<p>Build and run xv6:</p>
+<pre><code class="language-bash">$ make qemu
+riscv64-linux-gnu-gcc    -c -o kernel/entry.o kernel/entry.S
+riscv64-linux-gnu-gcc -Wall -Werror -O -fno-omit-frame-pointer -ggdb
+...
+riscv64-linux-gnu-objdump -S user/_zombie &gt; user/zombie.asm
+riscv64-linux-gnu-objdump -t user/_zombie | sed '1,/SYMBOL TABLE/d; s/ .* / /; /^$/d' &gt; user/zombie.sym
+mkfs/mkfs fs.img README user/_cat user/_echo user/_forktest user/_grep user/_init user/_kill user/_ln user/_ls user/_mkdir user/_rm user/_sh user/_stressfs user/_usertests user/_grind user/_wc user/_zombie 
+nmeta 46 (boot, super, log blocks 30 inode blocks 13, bitmap blocks 1) blocks 1954 total 2000
+balloc: first 767 blocks have been allocated
+balloc: write bitmap block at sector 45
+qemu-system-riscv64 -machine virt -bios none -kernel kernel/kernel -m 128M -smp 3 -nographic -global virtio-mmio.force-legacy=false -drive file=fs.img,if=none,format=raw,id=x0 -device virtio-blk-device,drive=x0,bus=virtio-mmio-bus.0
+
+xv6 kernel is booting
+
+hart 2 starting
+hart 1 starting
+init: starting sh
+$ 
+</code></pre>
+<p>Now, xv6-riscv has been compiled and a bash is running. If you type <code>ls</code> at the prompt, you should see output similar to the following:</p>
+<pre><code class="language-bash">$ ls
+.              1 1 1024
+..             1 1 1024
+README         2 2 2292
+cat            2 3 34264
+echo           2 4 33184
+forktest       2 5 16184
+grep           2 6 37520
+init           2 7 33648
+kill           2 8 33104
+ln             2 9 32920
+ls             2 10 36288
+mkdir          2 11 33160
+rm             2 12 33152
+sh             2 13 54728
+stressfs       2 14 34048
+usertests      2 15 179352
+grind          2 16 49400
+wc             2 17 35216
+zombie         2 18 32528
+console        3 19 0
+
+</code></pre>
+<p>There are the files that mkfs includes in the initial file system; most are programs you can run. </p>
+<p>To quit qemu type <code>Ctrl-a x</code> (press <code>Ctrl</code> and <code>a</code> at the same time, followed by <code>x</code>)</p>
+<p><strong>Tips</strong>: Print state is always a very powerful tool to debug. But if you truly prefer gdb, please refer to <a href="https://pdos.csail.mit.edu/6.828/2024/labs/guidance.html">here</a> and <em>Using gdb section</em> of <a href="https://pdos.csail.mit.edu/6.828/2024/labs/syscall.html">here</a>. </p>
+<h2 id="primary-instruction">Primary Instruction</h2>
+<p>We would like to divide the instruction for our lab into two levels-Primary and Advanced. You can choose primary one if you want to challenge yourself. The primary instruction will tell you what you need to do and where to find corresponding information. The advanced one, instead, is more like a step-by-step instruction to help you go towards the goal.</p>
+<p>I'd highly encourage you using primary first and go for the advanced instruction if you can't figure it out by yourself.</p>
+<ol>
+<li>Read section 4.3 and 4.4 of <a href="https://pdos.csail.mit.edu/6.828/2024/xv6/book-riscv-rev4.pdf">xv6 book</a>.</li>
+<li>Modification in kernel space</li>
+<li>Define your customized syscall and its number in <code>kernel/syscall.h</code>.</li>
+<li>Define corresponding prototype for kernel space function in <code>kernel/syscall.c</code>.</li>
+<li>Add the mapping relationship between the syscall number and kernel space function in <code>syscalls</code> map of <code>kernel/syscall.c</code>.</li>
+<li>Implement your system call function in <code>kernel/sysproc.c</code>.</li>
+<li>Modification in user space</li>
+<li>Modify <code>usys.pl</code> script, which will generate <code>usys.S</code> containing the system call stubs under user space. </li>
+<li>Add user space syscall prototype in <code>user/user.h</code>.</li>
+<li>Write a user space program to show your result.</li>
+</ol>
+<h2 id="advanced-instruction">Advanced Instruction</h2>
+<h3 id="read-section-43-and-44">Read Section 4.3 and 4.4!!</h3>
+<p>Read these two sections from <a href="https://pdos.csail.mit.edu/6.828/2024/xv6/book-riscv-rev4.pdf">xv6 book</a> to help you write report!</p>
+<h3 id="modification-in-kernel-space">Modification in Kernel Space</h3>
+<h4 id="define-syscall-and-number">Define SYSCALL and Number</h4>
+<p>Append single line to <code>kernel/syscall.h</code>, which defines the syscall name and syscall number (you can choose any vacant number, I just randomly choose 33 here. Don't choose the one same with me, or I would assume you just copy the code from the instruction).</p>
+<pre><code class="language-c">// System call numbers
+#define SYS_fork    1
+#define SYS_exit    2
+...
+#define SYS_close   21
+#define SYS_info    33
+</code></pre>
+<h4 id="define-kernel-space-prototype">Define Kernel Space Prototype</h4>
+<p>In <code>kernel/syscall.c</code>, find comment about <em>prototypes for the functions...</em> and append one function prototype for your system call to this code section. </p>
+<pre><code class="language-c">// Prototypes for the functions that handle system calls.
+extern uint64 sys_fork(void);
+extern uint64 sys_exit(void);
+...
+extern uint64 sys_close(void);
+extern uint64 sys_info(void);
+</code></pre>
+<p>Several questions:
+1. Should this function must be named as <code>sys_info()</code>?
+2. Why the parameters defined here is <code>void</code> instead of <code>int</code>?
+3. What is extern function in C program?</p>
+<h4 id="add-a-mapping-between-syscall-and-prototype">Add a Mapping between SYSCALL# and Prototype</h4>
+<p>In order to tell the OS, which function should be called when you meet specific syscall number, we need to add a mapping between the number and the function prototype. This mapping information is encoded in a static-generated array. We need to insert the address of function into the slot in the array indexed by the syscall number.</p>
+<p>Search for comment <em>An array mapping syscall numbers from syscall.h</em> in <code>kernel/syscall.c</code> and insert one element into this array.</p>
+<pre><code class="language-c">// An array mapping syscall numbers from syscall.h
+// to the function that handles the system call.
+static uint64 (*syscalls[])(void) = {
+[SYS_fork]    sys_fork,
+[SYS_exit]    sys_exit,
+[SYS_wait]    sys_wait,
+...
+[SYS_close]   sys_close,
+[SYS_info]    sys_info,
+};
+</code></pre>
+<h4 id="implement-syscall">Implement SYSCALL</h4>
+<p>You can check existing implemented syscalls from <code>kernel/sysproc.c</code> and what you need to do is implementing your customized syscall function here. </p>
+<p>The way you get arguments in syscall function is different from the regular way in C/C++ program (directly from certain offset to stack/base pointer and heap). You can refer to existing function implementation about how to retrieve the arguments. </p>
+<p>Also, you may need to modify exist structures or functions to help you implement your syscall. </p>
+<h3 id="modification-in-user-space">Modification in User Space</h3>
+<h4 id="modify-usyspl">Modify <code>usys.pl</code></h4>
+<p><code>usys.pl</code> is responsible for generating <code>usys.S</code>, which contains all syscall stubs in user space. Therefore, we need to add our customized syscall into this script as well.</p>
+<pre><code class="language-perl">entry(&quot;fork&quot;);
+...
+entry(&quot;info&quot;);
+</code></pre>
+<h4 id="add-user-space-prototype">Add User Space Prototype</h4>
+<p>We need to add a function prototype in user space for program to call the syscall. They are at <code>user/user.h</code>.</p>
+<p>Under the syscall section in this file, append your prototype:</p>
+<pre><code class="language-c">// system calls
+int fork(void);
+...
+int uptime(void);
+int info(int)
+</code></pre>
+<h4 id="user-space-program">User Space Program</h4>
+<p>Finally, you may need a user space program to help you check your syscall implementation. </p>
+<p>We provide a simple version here:</p>
+<pre><code class="language-c">#include &quot;kernel/types.h&quot;
+#include &quot;kernel/stat.h&quot;
+#include &quot;user/user.h&quot;
+
+int main() {
+    info(1);
+    info(2);
+    info(3);
+    info(2);
+    exit(0);
+}
+</code></pre>
+<p>You need to put this source file under <code>/user/</code>. Assume you have this code stored as file <code>test_info.c</code> under <code>/user</code> and you need to futher add this file into the <code>makefile</code>, which tells which files should be compiled. </p>
+<p>In <code>Makefile</code>, find variable <code>UPROGS</code> and append our user space program to it.</p>
+<pre><code class="language-makefile">UPROGS=\
+    $U/_cat\
+    $U/_echo\
+    $U/_forktest\
+...
+    $U/_zombie\
+    $U/_test_info\
+</code></pre>
+<p>Now you can recompile the xv6 and run the program <code>test_info</code> in the bash.</p>
+<pre><code class="language-sh">$ ./test_info
+Total number of processes: 3
+Total number of system calls made by current process: 4
+Total number of memory pages used by current process: 4
+Total number of system calls made by current process: 6
+</code></pre>
+<p>Please include a screenshot and explanation of execution result in your report.</p></div>
             </div>
         </div>
 
