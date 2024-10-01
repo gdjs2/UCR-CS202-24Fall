@@ -19,11 +19,11 @@ We will have **three** projects in total for the Lab Session:
 2. [Modifying the Scheduler](https://www.cs.ucr.edu/~heng/teaching/cs202-fall24/lab2.pdf)
 3. [Threads](https://www.cs.ucr.edu/~heng/teaching/cs202-fall24/lab3.pdf)
 
-Prior to (or some time after) each Lab release, I would publish an instruction to help you get start with. 
+Prior to (or some time after) each Lab release, I would publish an instruction to help you get start with. Please be sure to check this website in a timely manner.
 
 ## Lab Tutorial
 
-1. Lab 1: [System Call Implementation Tutorial]()
+1. Lab 1: [System Call Implementation Tutorial - Working on it]()
 
 ## Additional Links
 
