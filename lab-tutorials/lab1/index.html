@@ -5,7 +5,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         
-        
+        <meta name="author" content="Zhaoqi Xiao">
         <link rel="canonical" href="http://gdjs2.cn/UCR-CS202-24Fall/lab-tutorials/lab1/">
         <link rel="shortcut icon" href="../../img/favicon.ico">
         <title>Lab 1 - System Call Implementation - CS202 Advanced Operating System - Lab Session</title>
@@ -218,12 +218,10 @@ console        3 19 0
 <p>I'd highly encourage you using primary first and go for the advanced instruction if you can't figure it out by yourself.</p>
 <ol>
 <li>Read section 4.3 and 4.4 of <a href="https://pdos.csail.mit.edu/6.828/2024/xv6/book-riscv-rev4.pdf">xv6 book</a>.</li>
-<li>Modification in kernel space</li>
 <li>Define your customized syscall and its number in <code>kernel/syscall.h</code>.</li>
 <li>Define corresponding prototype for kernel space function in <code>kernel/syscall.c</code>.</li>
 <li>Add the mapping relationship between the syscall number and kernel space function in <code>syscalls</code> map of <code>kernel/syscall.c</code>.</li>
 <li>Implement your system call function in <code>kernel/sysproc.c</code>.</li>
-<li>Modification in user space</li>
 <li>Modify <code>usys.pl</code> script, which will generate <code>usys.S</code> containing the system call stubs under user space. </li>
 <li>Add user space syscall prototype in <code>user/user.h</code>.</li>
 <li>Write a user space program to show your result.</li>
