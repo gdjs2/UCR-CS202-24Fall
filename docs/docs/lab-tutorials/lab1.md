@@ -154,15 +154,13 @@ We would like to divide the instruction for our lab into two levels-Primary and 
 I'd highly encourage you using primary first and go for the advanced instruction if you can't figure it out by yourself.
 
 1. Read section 4.3 and 4.4 of [xv6 book](https://pdos.csail.mit.edu/6.828/2024/xv6/book-riscv-rev4.pdf).
-2. Modification in kernel space
-   1. Define your customized syscall and its number in `kernel/syscall.h`.
-   2. Define corresponding prototype for kernel space function in `kernel/syscall.c`.
-   3. Add the mapping relationship between the syscall number and kernel space function in `syscalls` map of `kernel/syscall.c`.
-   4. Implement your system call function in `kernel/sysproc.c`.
-3. Modification in user space
-   1. Modify `usys.pl` script, which will generate `usys.S` containing the system call stubs under user space. 
-   2. Add user space syscall prototype in `user/user.h`.
-   3. Write a user space program to show your result.
+2. Define your customized syscall and its number in `kernel/syscall.h`.
+3. Define corresponding prototype for kernel space function in `kernel/syscall.c`.
+4. Add the mapping relationship between the syscall number and kernel space function in `syscalls` map of `kernel/syscall.c`.
+5. Implement your system call function in `kernel/sysproc.c`.
+6. Modify `usys.pl` script, which will generate `usys.S` containing the system call stubs under user space. 
+7. Add user space syscall prototype in `user/user.h`.
+8. Write a user space program to show your result.
 
 ## Advanced Instruction
 
