@@ -8,6 +8,7 @@ As you can notice to, we use a risc-v version of xv6 here. Most of modern laptop
 
 We would introduce some supplementary resources for you. Feel free to check them when you meet difficulties finishing your project. 
 
+* [Debug for xv6](./debug.md)
 * [xv6 Tutorial](https://pdos.csail.mit.edu/6.828/2024/)
 * [xv6 Book](https://pdos.csail.mit.edu/6.828/2024/xv6/book-riscv-rev4.pdf)
 
