@@ -68,9 +68,10 @@ Thread 2 hit Breakpoint 1, syscall () at kernel/syscall.c:137
 137	  struct proc *p = myproc();
 ```
 
-Refer to [MIT's sildes](https://pdos.csail.mit.edu/6.828/2019/lec/gdb_slides.pdf) about common-used gdb command.
+Refer to [MIT's sildes](https://pdos.csail.mit.edu/6.828/2019/lec/gdb_slides.pdf) about common-used gdb commands.
 
 Some are listed below:
+
 * `continue` or `c`, continue executing the program untill the next breakpoint or the end of program.
 * `step` or `s`, execute the program by one step, if this is a function call, step into it.
 * `next` or `n`, execute the program by one step without stepping into a function call.
