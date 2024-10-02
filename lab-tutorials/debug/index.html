@@ -157,20 +157,22 @@ Continuing.
 Thread 2 hit Breakpoint 1, syscall () at kernel/syscall.c:137
 137   struct proc *p = myproc();
 </code></pre>
-<p>Refer to <a href="https://pdos.csail.mit.edu/6.828/2019/lec/gdb_slides.pdf">MIT's sildes</a> about common-used gdb command.</p>
-<p>Some are listed below:
-* <code>continue</code> or <code>c</code>, continue executing the program untill the next breakpoint or the end of program.
-* <code>step</code> or <code>s</code>, execute the program by one step, if this is a function call, step into it.
-* <code>next</code> or <code>n</code>, execute the program by one step without stepping into a function call.
-* <code>finish</code>, execute to the end of function.
-* <code>print &lt;expression&gt;</code> or <code>p &lt;expression&gt;</code>: print the value of expression.
-* <code>display &lt;expression&gt;</code>: automatically display the value of expression whenever stop.
-* <code>set &lt;variable&gt; = &lt;value&gt;</code> : modify the value of variable.
-* <code>backtrace</code> or <code>bt</code>: show the call stack.
-* <code>info frame</code>: show information about current frame.
-* <code>info locals</code>: how all local variables for current frame.
-* <code>list</code> or <code>l</code>: show the source code.
-* <code>list &lt;location&gt;</code>: show the source code at specific location.</p></div>
+<p>Refer to <a href="https://pdos.csail.mit.edu/6.828/2019/lec/gdb_slides.pdf">MIT's sildes</a> about common-used gdb commands.</p>
+<p>Some are listed below:</p>
+<ul>
+<li><code>continue</code> or <code>c</code>, continue executing the program untill the next breakpoint or the end of program.</li>
+<li><code>step</code> or <code>s</code>, execute the program by one step, if this is a function call, step into it.</li>
+<li><code>next</code> or <code>n</code>, execute the program by one step without stepping into a function call.</li>
+<li><code>finish</code>, execute to the end of function.</li>
+<li><code>print &lt;expression&gt;</code> or <code>p &lt;expression&gt;</code>: print the value of expression.</li>
+<li><code>display &lt;expression&gt;</code>: automatically display the value of expression whenever stop.</li>
+<li><code>set &lt;variable&gt; = &lt;value&gt;</code> : modify the value of variable.</li>
+<li><code>backtrace</code> or <code>bt</code>: show the call stack.</li>
+<li><code>info frame</code>: show information about current frame.</li>
+<li><code>info locals</code>: how all local variables for current frame.</li>
+<li><code>list</code> or <code>l</code>: show the source code.</li>
+<li><code>list &lt;location&gt;</code>: show the source code at specific location.</li>
+</ul></div>
             </div>
         </div>
 
