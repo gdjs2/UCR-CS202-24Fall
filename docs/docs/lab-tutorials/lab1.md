@@ -262,10 +262,11 @@ We provide a simple version here:
 #include "user/user.h"
 
 int main() {
-    info(1);
-    info(2);
-    info(3);
-    info(2);
+    printf("Total number of system calls made by current process: %d\n", info(2));
+    printf("Total number of processes: %d\n", info(1));
+    printf("Total number of system calls made by current process: %d\n", info(2));
+    printf("Total number of memory pages used by current process: %d\n", info(3));
+    printf("Total number of system calls made by current process: %d\n", info(2));
     exit(0);
 }
 ```
@@ -286,10 +287,11 @@ UPROGS=\
 Now you can recompile the xv6 and run the program `test_info` in the bash.
 ```sh
 $ ./test_info
+Total number of system calls made by current process: 3
 Total number of processes: 3
-Total number of system calls made by current process: 4
+Total number of system calls made by current process: 90
 Total number of memory pages used by current process: 4
-Total number of system calls made by current process: 6
+Total number of system calls made by current process: 205
 ```
 
 Please include a screenshot and explanation of execution result in your report.
