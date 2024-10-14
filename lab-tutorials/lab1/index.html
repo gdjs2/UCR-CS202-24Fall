@@ -299,10 +299,11 @@ int info(int)
 #include &quot;user/user.h&quot;
 
 int main() {
-    info(1);
-    info(2);
-    info(3);
-    info(2);
+    printf(&quot;Total number of system calls made by current process: %d\n&quot;, info(2));
+    printf(&quot;Total number of processes: %d\n&quot;, info(1));
+    printf(&quot;Total number of system calls made by current process: %d\n&quot;, info(2));
+    printf(&quot;Total number of memory pages used by current process: %d\n&quot;, info(3));
+    printf(&quot;Total number of system calls made by current process: %d\n&quot;, info(2));
     exit(0);
 }
 </code></pre>
@@ -318,10 +319,11 @@ int main() {
 </code></pre>
 <p>Now you can recompile the xv6 and run the program <code>test_info</code> in the bash.</p>
 <pre><code class="language-sh">$ ./test_info
+Total number of system calls made by current process: 3
 Total number of processes: 3
-Total number of system calls made by current process: 4
+Total number of system calls made by current process: 90
 Total number of memory pages used by current process: 4
-Total number of system calls made by current process: 6
+Total number of system calls made by current process: 205
 </code></pre>
 <p>Please include a screenshot and explanation of execution result in your report.</p></div>
             </div>
