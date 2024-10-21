@@ -114,9 +114,11 @@
 <h1 id="lab-2-scheduler-lottery-and-stride">Lab 2 - Scheduler, Lottery and Stride</h1>
 <h2 id="before-start">Before Start</h2>
 <p>Take a look at <a href="https://github.com/gdjs2/xv6-riscv-UCR-CS202-Fall24">our project repo</a>. We have a new <a href="https://github.com/gdjs2/xv6-riscv-UCR-CS202-Fall24/tree/scheduler-lab">scheduler-lab branch</a> published. In this lab, you need implement your work based on this branch. </p>
-<p>Also, get overall idea for these two scheduling strategy:
-* <a href="https://dl.acm.org/doi/pdf/10.5555/1267638.1267639">Lottery Scheduling</a>
-* <a href="https://web.eecs.umich.edu/~prabal/teaching/eecs582-w13/readings/stride.pdf">Stride Scheduling</a></p>
+<p>Also, get overall idea for these two scheduling strategy:</p>
+<ul>
+<li><a href="https://dl.acm.org/doi/pdf/10.5555/1267638.1267639">Lottery Scheduling</a></li>
+<li><a href="https://web.eecs.umich.edu/~prabal/teaching/eecs582-w13/readings/stride.pdf">Stride Scheduling</a></li>
+</ul>
 <h2 id="pull-the-repo">Pull the Repo</h2>
 <p>Clone the repo to your local machine. </p>
 <pre><code class="language-bash">$ git clone https://github.com/gdjs2/xv6-riscv-UCR-CS202-Fall24.git
@@ -130,11 +132,13 @@
 <p>just follow the instruction mark the directory as safe. </p>
 <p>Let's first see what has been done for our project.</p>
 <h3 id="makefile">Makefile</h3>
-<p>In <code>Makefile</code>, we have four mofidifcations:
-1. Add a source file and objective file random.o, which is a <a href="https://en.wikipedia.org/wiki/Linear_congruential_generator">Linear congruential generator (LCG)</a> for generating random numbers in lottery scheduler.
-2. Add a macro deciding which scheduler to use in compiling.
-3. Add a user space program to test different schedulers.
-4. Change the cpu counts to one. (why we need do this?)</p>
+<p>In <code>Makefile</code>, we have four mofidifcations:</p>
+<ol>
+<li>Add a source file and objective file random.o, which is a <a href="https://en.wikipedia.org/wiki/Linear_congruential_generator">Linear congruential generator (LCG)</a> for generating random numbers in lottery scheduler.</li>
+<li>Add a macro deciding which scheduler to use in compiling.</li>
+<li>Add a user space program to test different schedulers.</li>
+<li>Change the cpu counts to one. (why we need do this?)</li>
+</ol>
 <pre><code class="language-diff">diff --git a/Makefile b/Makefile
 index b2ce8c0..f8c820e 100644
 --- a/Makefile
@@ -209,10 +213,12 @@ index 03b3d6c..d1b6bb9 100644
 \ No newline at end of file
 </code></pre>
 <h3 id="kernelparamh">/kernel/param.h</h3>
-<p>In <code>/kernel/param.h</code>, we defined several constants for schedulers:
-1. <code>STRIDE1</code>: the total stride in stride scheduler, $2^{16}$ by default
-2. <code>DEFAULT_TICKS</code>: the default <strong>TICKETS</strong> for process, $2^{10}=1024$ by default.
-3. <code>LOTTERY</code> and <code>STRIDE</code>: variables for conditional compilation.</p>
+<p>In <code>/kernel/param.h</code>, we defined several constants for schedulers:</p>
+<ol>
+<li><code>STRIDE1</code>: the total stride in stride scheduler, $2^{16}$ by default</li>
+<li><code>DEFAULT_TICKS</code>: the default <strong>TICKETS</strong> for process, $2^{10}=1024$ by default.</li>
+<li><code>LOTTERY</code> and <code>STRIDE</code>: variables for conditional compilation.</li>
+</ol>
 <pre><code class="language-diff">diff --git a/kernel/param.h b/kernel/param.h
 index f998f5d..80ec6d3 100644
 --- a/kernel/param.h
@@ -535,17 +541,23 @@ index 86af7cb..01e426e 100755
 </code></pre>
 <h3 id="usertest_schedulerc">/user/test_scheduler.c</h3>
 <p>This is the test program in user space for you testing schedulers' behavior.</p>
-<p>There are several arguments for this program. 
-1. <code>SLEEP_TIME</code>: the time in ticks you want to make the parent process to sleep.
-2. <code>N_PROC</code>: the count of processes you want to run for testing.
-3. <code>TICKETN</code>: the ticket number for different process.</p>
-<p>This parent process does three things:
-1. Create <code>N_PROC</code> child processes.
-2. Sleep for <code>SLEEP_TIME</code> ticks.
-3. KILL all child and output their execution time (in ticks). </p>
-<p>All child processes do two things:
-1. Set tickets for itself.
-2. Do a infinite <code>while(1)</code> loop.</p>
+<p>There are several arguments for this program. </p>
+<ol>
+<li><code>SLEEP_TIME</code>: the time in ticks you want to make the parent process to sleep.</li>
+<li><code>N_PROC</code>: the count of processes you want to run for testing.</li>
+<li><code>TICKETN</code>: the ticket number for different process.</li>
+</ol>
+<p>This parent process does three things:</p>
+<ol>
+<li>Create <code>N_PROC</code> child processes.</li>
+<li>Sleep for <code>SLEEP_TIME</code> ticks.</li>
+<li>KILL all child and output their execution time (in ticks). </li>
+</ol>
+<p>All child processes do two things:</p>
+<ol>
+<li>Set tickets for itself.</li>
+<li>Do a infinite <code>while(1)</code> loop.</li>
+</ol>
 <p>The expected behavior of this program is that, the parent process would output ticks for each child process and the ticks matches your scheduling strategy. Specifically, for original scheduler it should output almost same ticks for each process no matter what tickets they have and the ticks should be inversely proportinal to the number of tickets. </p>
 <pre><code class="language-diff">diff --git a/user/test_scheduler.c b/user/test_scheduler.c
 deleted file mode 100644
