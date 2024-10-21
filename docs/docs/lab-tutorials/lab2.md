@@ -639,7 +639,7 @@ Child PID: 11, ticks spent: 15
 
 The ticks for two different execution is likely to be different.
 
-The one for stride should like:
+The one for stride should be like:
 ```bash
 $ ./test_scheduler 100 3 1024 512 256
 Created child process with PID: 4 and tickets: 1024
