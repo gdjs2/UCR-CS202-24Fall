@@ -140,47 +140,47 @@
 <li>Change the cpu counts to one. (why we need do this?)</li>
 </ol>
 <pre><code class="language-diff">diff --git a/Makefile b/Makefile
-index b2ce8c0..f8c820e 100644
+index f8c820e..b2ce8c0 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -28,8 +28,7 @@ OBJS = \
+@@ -28,7 +28,8 @@ OBJS = \
    $K/sysfile.o \
    $K/kernelvec.o \
    $K/plic.o \
--  $K/virtio_disk.o \
--  $K/random.o
-+  $K/virtio_disk.o
+-  $K/virtio_disk.o
++  $K/virtio_disk.o \
++  $K/random.o
 
  # riscv64-unknown-elf- or riscv64-linux-gnu-
  # perhaps in /opt/riscv/bin
-@@ -79,13 +78,6 @@ ifneq ($(shell $(CC) -dumpspecs 2&gt;/dev/null | grep -e '[^f]nopie'),)
+@@ -78,6 +79,13 @@ ifneq ($(shell $(CC) -dumpspecs 2&gt;/dev/null | grep -e '[^f]nopie'),)
  CFLAGS += -fno-pie -nopie
  endif
 
--# Add lottery and stride scheduler
--ifeq ($(SCHEDULER), LOTTERY)
--   CFLAGS += -DSCHEDULER=LOTTERY
--else ifeq ($(SCHEDULER), STRIDE)
--   CFLAGS += -DSCHEDULER=STRIDE
--endif
--
++# Add lottery and stride scheduler
++ifeq ($(SCHEDULER), LOTTERY)
++   CFLAGS += -DSCHEDULER=LOTTERY
++else ifeq ($(SCHEDULER), STRIDE)
++   CFLAGS += -DSCHEDULER=STRIDE
++endif
++
  LDFLAGS = -z max-page-size=4096
 
  $K/kernel: $(OBJS) $K/kernel.ld $U/initcode
-@@ -147,7 +139,6 @@ UPROGS=\
+@@ -139,6 +147,7 @@ UPROGS=\
     $U/_grind\
     $U/_wc\
     $U/_zombie\
--   $U/_test_scheduler\
++   $U/_test_scheduler\
 
  fs.img: mkfs/mkfs README $(UPROGS)
     mkfs/mkfs fs.img README $(UPROGS)
-@@ -169,7 +160,7 @@ QEMUGDB = $(shell if $(QEMU) -help | grep -q '^-gdb'; \
+@@ -160,7 +169,7 @@ QEMUGDB = $(shell if $(QEMU) -help | grep -q '^-gdb'; \
     then echo &quot;-gdb tcp::$(GDBPORT)&quot;; \
     else echo &quot;-s -p $(GDBPORT)&quot;; fi)
  ifndef CPUS
--CPUS := 1
-+CPUS := 3
+-CPUS := 3
++CPUS := 1
  endif
 
  QEMUOPTS = -machine virt -bios none -kernel $K/kernel -m 128M -smp $(CPUS) -nographic
@@ -190,26 +190,26 @@ index b2ce8c0..f8c820e 100644
 1. Add declaration for two kernel functions. <code>void proc_set_tickets(int)</code> is for setting tickets for current process and <code>int getticks(int pid)</code> is for getting ticks spent on particular process specified by <code>pid</code>.
 2. Add function interfaces for <code>random.o</code>-<code>uint random(void)</code> for generating random numbers and <code>void srand(uint64)</code> for specifying the seed of randomization. </p>
 <pre><code class="language-diff">diff --git a/kernel/defs.h b/kernel/defs.h
-index 03b3d6c..d1b6bb9 100644
+index d1b6bb9..03b3d6c 100644
 --- a/kernel/defs.h
 +++ b/kernel/defs.h
-@@ -106,8 +106,6 @@ void            yield(void);
+@@ -106,6 +106,8 @@ void            yield(void);
  int             either_copyout(int user_dst, uint64 dst, void *src, uint64 len);
  int             either_copyin(void *dst, int user_src, uint64 src, uint64 len);
  void            procdump(void);
--void            proc_set_tickets(int);
--int             getticks(int pid);
++void            proc_set_tickets(int);
++int             getticks(int pid);
 
  // swtch.S
  void            swtch(struct context*, struct context*);
-@@ -189,7 +187,3 @@ void            virtio_disk_intr(void);
+@@ -187,3 +189,7 @@ void            virtio_disk_intr(void);
 
  // number of elements in fixed-size array
  #define NELEM(x) (sizeof(x)/sizeof((x)[0]))
--
--// random.c
--uint            random(void);
--void            srand(uint64);
++
++// random.c
++uint            random(void);
++void            srand(uint64);
 \ No newline at end of file
 </code></pre>
 <h3 id="kernelparamh">/kernel/param.h</h3>
@@ -220,45 +220,44 @@ index 03b3d6c..d1b6bb9 100644
 <li><code>LOTTERY</code> and <code>STRIDE</code>: variables for conditional compilation.</li>
 </ol>
 <pre><code class="language-diff">diff --git a/kernel/param.h b/kernel/param.h
-index f998f5d..80ec6d3 100644
+index 80ec6d3..f998f5d 100644
 --- a/kernel/param.h
 +++ b/kernel/param.h
-@@ -12,7 +12,4 @@
+@@ -12,4 +12,7 @@
  #define FSSIZE       2000  // size of file system in blocks
  #define MAXPATH      128   // maximum file path name
  #define USERSTACK    1     // user stack pages
--#define STRIDE1      (1&lt;&lt;16)     // stride value for stride scheduling
--#define DEFAULT_TICKS (1&lt;&lt;10) // default time slice for stride scheduling
--#define LOTTERY      1 // lottery scheduling
--#define STRIDE       2 // stride scheduling
-+
+-
++#define STRIDE1      (1&lt;&lt;16)     // stride value for stride scheduling
++#define DEFAULT_TICKS (1&lt;&lt;10) // default time slice for stride scheduling
++#define LOTTERY      1 // lottery scheduling
++#define STRIDE       2 // stride scheduling
 </code></pre>
 <h3 id="kernelprocc">/kernel/proc.c</h3>
 <p>This is the most complex part and what you need to do is implementing two scheduler functions in this file, referring to <strong>TODO</strong> symbols. </p>
 <h4 id="new-member-vars">New Member Vars</h4>
 <p>We have four member variables defined in <code>struct proc</code> for schedulers-<code>tickets</code>, <code>stride</code>, <code>pass</code> and <code>ticks</code>. For their definition and usage, refer to the <a href="#before-start">papers</a>. </p>
-<pre><code class="language-diff">index 88ef59c..130d9ce 100644
---- a/kernel/proc.c
+<pre><code class="language-diff">--- a/kernel/proc.c
 +++ b/kernel/proc.c
-@@ -124,10 +124,6 @@ allocproc(void)
+@@ -124,6 +124,10 @@ allocproc(void)
  found:
    p-&gt;pid = allocpid();
    p-&gt;state = USED;
--  p-&gt;tickets = DEFAULT_TICKS;
--  p-&gt;stride = STRIDE1 / p-&gt;tickets;
--  p-&gt;pass = p-&gt;stride;
--  p-&gt;ticks = 0;
++  p-&gt;tickets = DEFAULT_TICKS;
++  p-&gt;stride = STRIDE1 / p-&gt;tickets;
++  p-&gt;pass = p-&gt;stride;
++  p-&gt;ticks = 0;
 
    // Allocate a trapframe page.
    if((p-&gt;trapframe = (struct trapframe *)kalloc()) == 0){
-@@ -173,10 +169,6 @@ freeproc(struct proc *p)
+@@ -169,6 +173,10 @@ freeproc(struct proc *p)
    p-&gt;killed = 0;
    p-&gt;xstate = 0;
    p-&gt;state = UNUSED;
--  p-&gt;tickets = 0;
--  p-&gt;stride = 0;
--  p-&gt;pass = 0;
--  p-&gt;ticks = 0;
++  p-&gt;tickets = 0;
++  p-&gt;stride = 0;
++  p-&gt;pass = 0;
++  p-&gt;ticks = 0;
  }
 </code></pre>
 <h4 id="scheduler-part">Scheduler Part</h4>
@@ -288,94 +287,93 @@ release(&amp;p-&gt;lock);
 <p>Acquire and release the process lock when you need to access/modify the members in structure <code>p</code> to avoid consistency issues. </p>
 <p><code>intr_on()</code> is used for enabling the interrupts in OS.</p>
 <p><code>asm volatile("wfi")</code> is used for inserting a assembly language <code>wfi</code>, which puts current CPU to idle and waiting till next interrput. </p>
-<pre><code class="language-diff"> // Create a user page table for a given process, with no user memory,
-@@ -449,7 +441,6 @@ wait(uint64 addr)
+<pre><code class="language-diff"> @@ -441,6 +449,7 @@ wait(uint64 addr)
  //  - swtch to start running that process.
  //  - eventually that process transfers control
  //    via swtch back to the scheduler.
--#if !defined(SCHEDULER) || (SCHEDULER != LOTTERY &amp;&amp; SCHEDULER != STRIDE)
++#if !defined(SCHEDULER) || (SCHEDULER != LOTTERY &amp;&amp; SCHEDULER != STRIDE)
  void
  scheduler(void)
  {
-@@ -473,7 +464,6 @@ scheduler(void)
+@@ -464,6 +473,7 @@ scheduler(void)
          p-&gt;state = RUNNING;
          c-&gt;proc = p;
          swtch(&amp;c-&gt;context, &amp;p-&gt;context);
--        ++p-&gt;ticks;  // Increment the tick count for the process.
++        ++p-&gt;ticks;  // Increment the tick count for the process.
 
          // Process is done running for now.
          // It should have changed its p-&gt;state before coming back.
-@@ -490,26 +480,6 @@ scheduler(void)
+@@ -480,6 +490,26 @@ scheduler(void)
    }
  }
 
--#elif SCHEDULER == LOTTERY
--/**
-- * TODO: Implement the lottery scheduler.
-- */
--void
--scheduler(void)
--{
--
--}
--#elif SCHEDULER == STRIDE
--/**
-- * TODO: Implement the stride scheduler.
-- */
--void
--scheduler(void)
--{
--
--}
--#endif
--
++#elif SCHEDULER == LOTTERY
++/**
++ * TODO: Implement the lottery scheduler.
++ */
++void
++scheduler(void)
++{
++
++}
++#elif SCHEDULER == STRIDE
++/**
++ * TODO: Implement the stride scheduler.
++ */
++void
++scheduler(void)
++{
++
++}
++#endif
++
  // Switch to scheduler.  Must hold only p-&gt;lock
  // and have changed proc-&gt;state. Saves and restores
  // intena because intena is a property of this
-@@ -723,24 +693,3 @@ procdump(void)
+@@ -693,3 +723,24 @@ procdump(void)
      printf(&quot;\n&quot;);
    }
  }
++
 </code></pre>
 <h4 id="two-kernel-functions">Two Kernel Functions</h4>
 <p>Two kernel functions implementation for setting tickets and getting ticks, referring <a href="#kerneldefsh">here</a> for details.</p>
-<pre><code class="language-diff">-
--void proc_set_tickets(int tickets) {
--  struct proc *p = myproc();
--  acquire(&amp;p-&gt;lock);
--  p-&gt;tickets = tickets;
--  p-&gt;stride = STRIDE1 / p-&gt;tickets;
--  release(&amp;p-&gt;lock);
--}
--
--int getticks(int pid) {
--  struct proc *p;
--  for (p = proc; p &lt; &amp;proc[NPROC]; p++) {
--    acquire(&amp;p-&gt;lock);
--    if (p-&gt;pid == pid) {
--      release(&amp;p-&gt;lock);
--      return p-&gt;ticks;
--    }
--    release(&amp;p-&gt;lock);
--  }
--  return -1;
--}
+<pre><code class="language-diff">+void proc_set_tickets(int tickets) {
++  struct proc *p = myproc();
++  acquire(&amp;p-&gt;lock);
++  p-&gt;tickets = tickets;
++  p-&gt;stride = STRIDE1 / p-&gt;tickets;
++  release(&amp;p-&gt;lock);
++}
++
++int getticks(int pid) {
++  struct proc *p;
++  for (p = proc; p &lt; &amp;proc[NPROC]; p++) {
++    acquire(&amp;p-&gt;lock);
++    if (p-&gt;pid == pid) {
++      release(&amp;p-&gt;lock);
++      return p-&gt;ticks;
++    }
++    release(&amp;p-&gt;lock);
++  }
++  return -1;
++}
 \ No newline at end of file
 </code></pre>
 <h3 id="kernelproch">/kernel/proc.h</h3>
 <p>Add necessary attributes for structure <code>struct proc</code>, refer <a href="#new-member-vars">here</a> for details.</p>
 <pre><code class="language-diff">diff --git a/kernel/proc.h b/kernel/proc.h
-index d5e5fc5..d021857 100644
+index d021857..d5e5fc5 100644
 --- a/kernel/proc.h
 +++ b/kernel/proc.h
-@@ -91,10 +91,6 @@ struct proc {
+@@ -91,6 +91,10 @@ struct proc {
    int killed;                  // If non-zero, have been killed
    int xstate;                  // Exit status to be returned to parent's wait
    int pid;                     // Process ID
--  uint tickets;
--  uint stride;
--  uint pass;
--  uint ticks;
++  uint tickets;
++  uint stride;
++  uint pass;
++  uint ticks;
 
    // wait_lock must be held when using this:
    struct proc *parent;         // Parent process
@@ -383,46 +381,46 @@ index d5e5fc5..d021857 100644
 <h3 id="kernelrandomc">/kernel/random.c</h3>
 <p>Source file for random number generation. You would use them in lottery scheduling. Refer <a href="#kerneldefsh">here</a> for details.</p>
 <pre><code class="language-diff">diff --git a/kernel/random.c b/kernel/random.c
-deleted file mode 100644
-index 53334b0..0000000
---- a/kernel/random.c
-+++ /dev/null
-@@ -1,12 +0,0 @@
--#include &quot;types.h&quot;
--
--static uint64 seed = 1;
--
--uint random(void) {
--    seed = seed * 6364136223846793005ULL + 1;
--    return (seed &gt;&gt; 32) &amp; 0x7fffffff;
--}
--
--void srand(uint64 new_seed) {
--    seed = new_seed;
--}
+new file mode 100644
+index 0000000..53334b0
+--- /dev/null
++++ b/kernel/random.c
+@@ -0,0 +1,12 @@
++#include &quot;types.h&quot;
++
++static uint64 seed = 1;
++
++uint random(void) {
++    seed = seed * 6364136223846793005ULL + 1;
++    return (seed &gt;&gt; 32) &amp; 0x7fffffff;
++}
++
++void srand(uint64 new_seed) {
++    seed = new_seed;
++}
 \ No newline at end of file
 </code></pre>
 <h3 id="kernelsyscallc">/kernel/syscall.c</h3>
 <p>Mandatory system calls definition, you have learned them in Lab 1.</p>
 <pre><code class="language-diff">diff --git a/kernel/syscall.c b/kernel/syscall.c
-index 217a31b..ed65409 100644
+index ed65409..217a31b 100644
 --- a/kernel/syscall.c
 +++ b/kernel/syscall.c
-@@ -101,8 +101,6 @@ extern uint64 sys_unlink(void);
+@@ -101,6 +101,8 @@ extern uint64 sys_unlink(void);
  extern uint64 sys_link(void);
  extern uint64 sys_mkdir(void);
  extern uint64 sys_close(void);
--extern uint64 sys_settickets(void);
--extern uint64 sys_getticks(void);
++extern uint64 sys_settickets(void);
++extern uint64 sys_getticks(void);
 
  // An array mapping syscall numbers from syscall.h
  // to the function that handles the system call.
-@@ -128,8 +126,6 @@ static uint64 (*syscalls[])(void) = {
+@@ -126,6 +128,8 @@ static uint64 (*syscalls[])(void) = {
  [SYS_link]    sys_link,
  [SYS_mkdir]   sys_mkdir,
  [SYS_close]   sys_close,
--[SYS_settickets]  sys_settickets,
--[SYS_getticks]    sys_getticks,
++[SYS_settickets]  sys_settickets,
++[SYS_getticks]    sys_getticks,
  };
 
  void
@@ -430,113 +428,113 @@ index 217a31b..ed65409 100644
 <h3 id="kernelsyscallh">/kernel/syscall.h</h3>
 <p>Same to above. </p>
 <pre><code class="language-diff">diff --git a/kernel/syscall.h b/kernel/syscall.h
-index 19fc543..bc5f356 100644
+index bc5f356..19fc543 100644
 --- a/kernel/syscall.h
 +++ b/kernel/syscall.h
-@@ -1,24 +1,22 @@
+@@ -1,22 +1,24 @@
  // System call numbers
--#define SYS_fork        1
--#define SYS_exit        2
--#define SYS_wait        3
--#define SYS_pipe        4
--#define SYS_read        5
--#define SYS_kill        6
--#define SYS_exec        7
--#define SYS_fstat       8
--#define SYS_chdir       9
--#define SYS_dup         10
--#define SYS_getpid      11
--#define SYS_sbrk        12
--#define SYS_sleep       13
--#define SYS_uptime      14
--#define SYS_open        15
--#define SYS_write       16
--#define SYS_mknod       17
--#define SYS_unlink      18
--#define SYS_link        19
--#define SYS_mkdir       20
--#define SYS_close       21
--#define SYS_settickets  22
--#define SYS_getticks    23
-+#define SYS_fork    1
-+#define SYS_exit    2
-+#define SYS_wait    3
-+#define SYS_pipe    4
-+#define SYS_read    5
-+#define SYS_kill    6
-+#define SYS_exec    7
-+#define SYS_fstat   8
-+#define SYS_chdir   9
-+#define SYS_dup    10
-+#define SYS_getpid 11
-+#define SYS_sbrk   12
-+#define SYS_sleep  13
-+#define SYS_uptime 14
-+#define SYS_open   15
-+#define SYS_write  16
-+#define SYS_mknod  17
-+#define SYS_unlink 18
-+#define SYS_link   19
-+#define SYS_mkdir  20
-+#define SYS_close  21
+-#define SYS_fork    1
+-#define SYS_exit    2
+-#define SYS_wait    3
+-#define SYS_pipe    4
+-#define SYS_read    5
+-#define SYS_kill    6
+-#define SYS_exec    7
+-#define SYS_fstat   8
+-#define SYS_chdir   9
+-#define SYS_dup    10
+-#define SYS_getpid 11
+-#define SYS_sbrk   12
+-#define SYS_sleep  13
+-#define SYS_uptime 14
+-#define SYS_open   15
+-#define SYS_write  16
+-#define SYS_mknod  17
+-#define SYS_unlink 18
+-#define SYS_link   19
+-#define SYS_mkdir  20
+-#define SYS_close  21
++#define SYS_fork        1
++#define SYS_exit        2
++#define SYS_wait        3
++#define SYS_pipe        4
++#define SYS_read        5
++#define SYS_kill        6
++#define SYS_exec        7
++#define SYS_fstat       8
++#define SYS_chdir       9
++#define SYS_dup         10
++#define SYS_getpid      11
++#define SYS_sbrk        12
++#define SYS_sleep       13
++#define SYS_uptime      14
++#define SYS_open        15
++#define SYS_write       16
++#define SYS_mknod       17
++#define SYS_unlink      18
++#define SYS_link        19
++#define SYS_mkdir       20
++#define SYS_close       21
++#define SYS_settickets  22
++#define SYS_getticks    23
 </code></pre>
 <h3 id="kernelsysprocc">/kernel/sysproc.c</h3>
 <p>System call implementations. </p>
 <pre><code class="language-diff">diff --git a/kernel/sysproc.c b/kernel/sysproc.c
-index e53385f..3b4d5bd 100644
+index 3b4d5bd..e53385f 100644
 --- a/kernel/sysproc.c
 +++ b/kernel/sysproc.c
-@@ -91,23 +91,3 @@ sys_uptime(void)
+@@ -91,3 +91,23 @@ sys_uptime(void)
    release(&amp;tickslock);
    return xticks;
  }
--
--uint64
--sys_settickets(void)
--{
--  int tickets;
--  argint(0, &amp;tickets);
--  if (tickets &lt; 1) {
--    return -1;
--  }
--  proc_set_tickets(tickets);
--  return 0;
--}
--
--uint64
--sys_getticks(void)
--{
--  int pid;
--  argint(0, &amp;pid);
--  return getticks(pid);
--}
++
++uint64
++sys_settickets(void)
++{
++  int tickets;
++  argint(0, &amp;tickets);
++  if (tickets &lt; 1) {
++    return -1;
++  }
++  proc_set_tickets(tickets);
++  return 0;
++}
++
++uint64
++sys_getticks(void)
++{
++  int pid;
++  argint(0, &amp;pid);
++  return getticks(pid);
++}
 \ No newline at end of file
 </code></pre>
 <h3 id="useruserh">/user/user.h</h3>
 <p>The system call interface in user space.</p>
 <pre><code class="language-diff">diff --git a/user/user.h b/user/user.h
-index f09d85b..f16fe27 100644
+index f16fe27..f09d85b 100644
 --- a/user/user.h
 +++ b/user/user.h
-@@ -22,8 +22,6 @@ int getpid(void);
+@@ -22,6 +22,8 @@ int getpid(void);
  char* sbrk(int);
  int sleep(int);
  int uptime(void);
--int settickets(int);
--int getticks(int);
++int settickets(int);
++int getticks(int);
 
  // ulib.c
  int stat(const char*, struct stat*);
 diff --git a/user/usys.pl b/user/usys.pl
-index 86af7cb..01e426e 100755
+index 01e426e..86af7cb 100755
 --- a/user/usys.pl
 +++ b/user/usys.pl
-@@ -36,5 +36,3 @@ entry(&quot;getpid&quot;);
+@@ -36,3 +36,5 @@ entry(&quot;getpid&quot;);
  entry(&quot;sbrk&quot;);
  entry(&quot;sleep&quot;);
  entry(&quot;uptime&quot;);
--entry(&quot;settickets&quot;);
--entry(&quot;getticks&quot;);
++entry(&quot;settickets&quot;);
++entry(&quot;getticks&quot;);
 \ No newline at end of file
 </code></pre>
 <h3 id="usertest_schedulerc">/user/test_scheduler.c</h3>
@@ -560,60 +558,60 @@ index 86af7cb..01e426e 100755
 </ol>
 <p>The expected behavior of this program is that, the parent process would output ticks for each child process and the ticks matches your scheduling strategy. Specifically, for original scheduler it should output almost same ticks for each process no matter what tickets they have and the ticks should be inversely proportinal to the number of tickets. </p>
 <pre><code class="language-diff">diff --git a/user/test_scheduler.c b/user/test_scheduler.c
-deleted file mode 100644
-index 23dd138..0000000
---- a/user/test_scheduler.c
-+++ /dev/null
-@@ -1,49 +0,0 @@
--#include &quot;kernel/types.h&quot;
--#include &quot;user/user.h&quot;
--
--const int MAX_N_PROC = 1 &lt;&lt; 5;
--const int MAX_TICKETS = 1 &lt;&lt; 10;
--
--int main(int argc, char **argv) {
--    if (argc &lt; 4) {
--        printf(&quot;Usage: %s [SLEEP_TIME in ticks] [N_PROC] [TICKET1] [TICKET2]...\n&quot;, argv[0]);
--        exit(-1);
--    }
--    int sleep_time = atoi(argv[1]);
--    int n_proc = atoi(argv[2]);
--    if (n_proc &gt; MAX_N_PROC) {
--        printf(&quot;Error: Maximum number of processes is %d (%d received)\n&quot;, MAX_N_PROC, n_proc);
--        exit(-1);
--    }
--    int tickets[MAX_N_PROC];
--    for (int i = 0; i &lt; n_proc; i++) {
--        tickets[i] = atoi(argv[i + 3]);
--        if (tickets[i] &lt; 1 || tickets[i] &gt; MAX_TICKETS) {
--            printf(&quot;Error: Ticket value must be between 1 and %d (%d received)\n&quot;, MAX_TICKETS, tickets[i]);
--            exit(-1);
--        }
--    }
--
--    int *childs = malloc(n_proc * sizeof(int));
--    for (int i = 0; i &lt; n_proc; ++i) {
--        int pid = fork();
--        if (pid == 0) {
--            // Child process
--            settickets(tickets[i]);
--            while (1) ; // Infinite loop to keep the child process running
--        } else if (pid &gt; 0) {
--            // Parent process
--            childs[i] = pid;
--            printf(&quot;Created child process with PID: %d and tickets: %d\n&quot;, pid, tickets[i]);
--        } else {
--            printf(&quot;Error: Fork failed\n&quot;);
--            exit(-1);
--        }
--    }
--    sleep(sleep_time);
--    for (int i = 0; i &lt; n_proc; ++i) {
--        printf(&quot;Child PID: %d, ticks spent: %d\n&quot;, childs[i], getticks(childs[i]));
--        kill(childs[i]);
--    }
--    return 0;
--}
+new file mode 100644
+index 0000000..23dd138
+--- /dev/null
++++ b/user/test_scheduler.c
+@@ -0,0 +1,49 @@
++#include &quot;kernel/types.h&quot;
++#include &quot;user/user.h&quot;
++
++const int MAX_N_PROC = 1 &lt;&lt; 5;
++const int MAX_TICKETS = 1 &lt;&lt; 10;
++
++int main(int argc, char **argv) {
++    if (argc &lt; 4) {
++        printf(&quot;Usage: %s [SLEEP_TIME in ms] [N_PROC] [TICKET1] [TICKET2]...\n&quot;, argv[0]);
++        exit(-1);
++    }
++    int sleep_time = atoi(argv[1]);
++    int n_proc = atoi(argv[2]);
++    if (n_proc &gt; MAX_N_PROC) {
++        printf(&quot;Error: Maximum number of processes is %d (%d received)\n&quot;, MAX_N_PROC, n_proc);
++        exit(-1);
++    }
++    int tickets[MAX_N_PROC];
++    for (int i = 0; i &lt; n_proc; i++) {
++        tickets[i] = atoi(argv[i + 3]);
++        if (tickets[i] &lt; 1 || tickets[i] &gt; MAX_TICKETS) {
++            printf(&quot;Error: Ticket value must be between 1 and %d (%d received)\n&quot;, MAX_TICKETS, tickets[i]);
++            exit(-1);
++        }
++    }
++
++    int *childs = malloc(n_proc * sizeof(int));
++    for (int i = 0; i &lt; n_proc; ++i) {
++        int pid = fork();
++        if (pid == 0) {
++            // Child process
++            settickets(tickets[i]);
++            while (1) ; // Infinite loop to keep the child process running
++        } else if (pid &gt; 0) {
++            // Parent process
++            childs[i] = pid;
++            printf(&quot;Created child process with PID: %d and tickets: %d\n&quot;, pid, tickets[i]);
++        } else {
++            printf(&quot;Error: Fork failed\n&quot;);
++            exit(-1);
++        }
++    }
++    sleep(sleep_time);
++    for (int i = 0; i &lt; n_proc; ++i) {
++        printf(&quot;Child PID: %d, ticks spent: %d\n&quot;, childs[i], getticks(childs[i]));
++        kill(childs[i]);
++    }
++    return 0;
++}
 \ No newline at end of file
 </code></pre>
 <h2 id="compile-and-run">Compile and Run</h2>
