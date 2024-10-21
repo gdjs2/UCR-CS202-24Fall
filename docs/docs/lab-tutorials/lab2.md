@@ -5,6 +5,7 @@
 Take a look at [our project repo](https://github.com/gdjs2/xv6-riscv-UCR-CS202-Fall24). We have a new [scheduler-lab branch](https://github.com/gdjs2/xv6-riscv-UCR-CS202-Fall24/tree/scheduler-lab) published. In this lab, you need implement your work based on this branch. 
 
 Also, get overall idea for these two scheduling strategy:
+
 * [Lottery Scheduling](https://dl.acm.org/doi/pdf/10.5555/1267638.1267639)
 * [Stride Scheduling](https://web.eecs.umich.edu/~prabal/teaching/eecs582-w13/readings/stride.pdf)
 
@@ -31,6 +32,7 @@ Let's first see what has been done for our project.
 ### Makefile
 
 In `Makefile`, we have four mofidifcations:
+
 1. Add a source file and objective file random.o, which is a [Linear congruential generator (LCG)](https://en.wikipedia.org/wiki/Linear_congruential_generator) for generating random numbers in lottery scheduler.
 2. Add a macro deciding which scheduler to use in compiling.
 3. Add a user space program to test different schedulers.
@@ -118,6 +120,7 @@ index 03b3d6c..d1b6bb9 100644
 ### /kernel/param.h
 
 In `/kernel/param.h`, we defined several constants for schedulers:
+
 1. `STRIDE1`: the total stride in stride scheduler, $2^{16}$ by default
 2. `DEFAULT_TICKS`: the default **TICKETS** for process, $2^{10}=1024$ by default.
 3. `LOTTERY` and `STRIDE`: variables for conditional compilation.
@@ -494,16 +497,19 @@ index 86af7cb..01e426e 100755
 This is the test program in user space for you testing schedulers' behavior.
 
 There are several arguments for this program. 
+
 1. `SLEEP_TIME`: the time in ticks you want to make the parent process to sleep.
 2. `N_PROC`: the count of processes you want to run for testing.
 3. `TICKETN`: the ticket number for different process.
 
 This parent process does three things:
+
 1. Create `N_PROC` child processes.
 2. Sleep for `SLEEP_TIME` ticks.
 3. KILL all child and output their execution time (in ticks). 
 
 All child processes do two things:
+
 1. Set tickets for itself.
 2. Do a infinite `while(1)` loop.
 
