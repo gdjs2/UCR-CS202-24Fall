@@ -24,6 +24,7 @@ Prior to (or some time after) each Lab release, I would publish an instruction t
 ## Lab Tutorial
 
 * Lab 1: [System Call Implementation Tutorial](lab-tutorials/lab1.md)
+* Lab 2: [Lottery and Stride Scheduling](lab-tutorials/lab2.md)
 * [Debugging Tips](./lab-tutorials/debug.md)
 
 ## Additional Links
