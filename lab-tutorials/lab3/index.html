@@ -6,9 +6,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         
         <meta name="author" content="Zhaoqi Xiao">
-        <link rel="canonical" href="http://gdjs2.cn/UCR-CS202-24Fall/lab-tutorials/debug/">
+        <link rel="canonical" href="http://gdjs2.cn/UCR-CS202-24Fall/lab-tutorials/lab3/">
         <link rel="shortcut icon" href="../../img/favicon.ico">
-        <title>Debugging Tips - CS202 Advanced Operating System - Lab Session</title>
+        <title>Lab 3 - Kernel Thread - CS202 Advanced Operating System - Lab Session</title>
         <link href="../../css/bootstrap.min.css" rel="stylesheet">
         <link href="../../css/fontawesome.min.css" rel="stylesheet">
         <link href="../../css/brands.min.css" rel="stylesheet">
@@ -42,7 +42,7 @@
                                 <ul class="dropdown-menu">
                                     
 <li>
-    <a href="./" class="dropdown-item active" aria-current="page">Debugging Tips</a>
+    <a href="../debug/" class="dropdown-item">Debugging Tips</a>
 </li>
                                     
 <li>
@@ -54,7 +54,7 @@
 </li>
                                     
 <li>
-    <a href="../lab3/" class="dropdown-item">Lab 3 - Kernel Thread</a>
+    <a href="./" class="dropdown-item active" aria-current="page">Lab 3 - Kernel Thread</a>
 </li>
                                 </ul>
                             </li>
@@ -67,12 +67,12 @@
                             </a>
                         </li>
                             <li class="nav-item">
-                                <a rel="prev" href="../.." class="nav-link">
+                                <a rel="prev" href="../lab2/" class="nav-link">
                                     <i class="fa fa-arrow-left"></i> Previous
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a rel="next" href="../lab1/" class="nav-link">
+                                <a rel="next" class="nav-link disabled">
                                     Next <i class="fa fa-arrow-right"></i>
                                 </a>
                             </li>
@@ -94,13 +94,25 @@
     <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
         <ul class="nav flex-column">
             
-            <li class="nav-item" data-bs-level="1"><a href="#debugging-tips" class="nav-link">Debugging Tips</a>
+            <li class="nav-item" data-bs-level="1"><a href="#lab-3-kernel-thread" class="nav-link">Lab 3 - Kernel Thread</a>
               <ul class="nav flex-column">
-            <li class="nav-item" data-bs-level="2"><a href="#before-gdb" class="nav-link">Before GDB</a>
+            <li class="nav-item" data-bs-level="2"><a href="#before-start" class="nav-link">Before Start:</a>
               <ul class="nav flex-column">
               </ul>
             </li>
-            <li class="nav-item" data-bs-level="2"><a href="#using-gdb-with-qemu" class="nav-link">Using GDB with QEMU</a>
+            <li class="nav-item" data-bs-level="2"><a href="#pull-the-repo" class="nav-link">Pull the Repo</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#what-to-do" class="nav-link">What to do?</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#requirments" class="nav-link">Requirments:</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#grade" class="nav-link">Grade</a>
               <ul class="nav flex-column">
               </ul>
             </li>
@@ -111,76 +123,50 @@
 </div></div>
                     <div class="col-md-9" role="main">
 
-<h1 id="debugging-tips">Debugging Tips</h1>
-<h2 id="before-gdb">Before GDB</h2>
-<p>Before stepping into gdb, I would recommand print statement first. Always think about whether a single print statement can solve your problem before you decide to use gdb.</p>
-<h2 id="using-gdb-with-qemu">Using GDB with QEMU</h2>
-<p>First, use command <code>make qemu-gdb</code> to compile and start qemu. </p>
-<pre><code class="language-bash">$ make qemu-gdb
-riscv64-linux-gnu-gcc -Wall -Werror -O -fno-omit-frame-pointer -ggdb -gdwarf-2 -MD -mcmodel=medany -fno-common -nostdlib
-...
-balloc: first 800 blocks have been allocated
-balloc: write bitmap block at sector 45
-*** Now run 'gdb' in another window.
-qemu-system-riscv64 -machine virt -bios none -kernel kernel/kernel -m 128M -smp 3 -nographic -global virtio-mmio.force-legacy=false -drive file=fs.img,if=none,format=raw,id=x0 -device virtio-blk-device,drive=x0,bus=virtio-mmio-bus.0 -S -gdb tcp::25000
+<h1 id="lab-3-kernel-thread">Lab 3 - Kernel Thread</h1>
+<h2 id="before-start">Before Start:</h2>
+<p>Take a look at <a href="https://github.com/gdjs2/xv6-riscv-UCR-CS202-Fall24">our project repo</a>. We have a new <a href="https://github.com/gdjs2/xv6-riscv-UCR-CS202-Fall24/tree/kernel-thread-lab">kernel-thread-lab branch</a> published. In this lab, you need implement your work based on this branch. </p>
+<p>Another very important thing is reading section 2.4 in <a href="https://pdos.csail.mit.edu/6.828/2023/xv6/book-riscv-rev3.pdf">xv6 book</a>, especially figure 2.3. And also, read necessary part, make sure you understand what Trapframe and Trapoline are. </p>
+<h2 id="pull-the-repo">Pull the Repo</h2>
+<p>Clone the repo to your local machine. </p>
+<pre><code class="language-bash">$ git clone https://github.com/gdjs2/xv6-riscv-UCR-CS202-Fall24.git
 </code></pre>
-<p>If you look at the <code>Makefile</code>, you can find the target definition at the end of file. </p>
-<pre><code class="language-Makefile">K=kernel
-U=user
-...
-qemu: $K/kernel fs.img
-    $(QEMU) $(QEMUOPTS)
-
-.gdbinit: .gdbinit.tmpl-riscv
-    sed &quot;s/:1234/:$(GDBPORT)/&quot; &lt; $^ &gt; $@
-
-qemu-gdb: $K/kernel .gdbinit fs.img
-    @echo &quot;*** Now run 'gdb' in another window.&quot; 1&gt;&amp;2
-    $(QEMU) $(QEMUOPTS) -S $(QEMUGDB)
+<p>Change directory and checkout to scheduler-lab branch. </p>
+<pre><code class="language-bash">$ git checkout kernel-thread-lab
 </code></pre>
-<p>The difference between <code>qemu</code> and <code>qemu-gdb</code> is that <code>qemu-gdb</code> will generate a gdb configuration file <code>.gdbinit</code>, which will be further read by gdb for initialization. Therefore, please run following <code>gdb-multiarch</code> (or <code>riscv64-linux-gnu-gdb</code> or <code>riscv64-unknown-elf-gdb</code>) under the same dicrectory so that they can find the initialization file. </p>
-<p>Run <code>gdb-multiarch</code> (or <code>riscv64-linux-gnu-gdb</code> or <code>riscv64-unknown-elf-gdb</code>) in another window <strong>UNDER THE DIRECTORY OF XV6</strong>. </p>
-<blockquote>
-<p>If you start gdb and see a warning of the form 'warning: File "/home/xv6-riscv-UCR-CS202-Fall24/. gdbinit" auto-loading has been declined by ...', edit <code>~/.gdbinit</code> to add "add-auto-load-safe-path..." as suggected by the warning. </p>
-</blockquote>
-<pre><code class="language-bash">$ gdb-multiarch 
-GNU gdb (Ubuntu 15.0.50.20240403-0ubuntu1) 15.0.50.20240403-git
-...
-The target architecture is set to &quot;riscv:rv64&quot;.
-warning: No executable has been specified and target does not support
-determining executable automatically.  Try using the &quot;file&quot; command.
-0x0000000000001000 in ?? ()
-(gdb) 
-</code></pre>
-<p>Afterwards, you can just use gdb as how you do for normal program.</p>
-<p>For example, if we want to set breakpoint at line 137 of file <code>syscall.c</code>:</p>
-<pre><code class="language-bash">(gdb) b syscall.c:137
-Breakpoint 1 at 0x8000283c: file kernel/syscall.c, line 137.
-</code></pre>
-<p>Then you can input <code>c</code> to continue the program and it will stop at the breakpoint set.</p>
-<pre><code class="language-bash">(gdb) c
-Continuing.
-[Switching to Thread 1.2]
-
-Thread 2 hit Breakpoint 1, syscall () at kernel/syscall.c:137
-137   struct proc *p = myproc();
-</code></pre>
-<p>Refer to <a href="https://pdos.csail.mit.edu/6.828/2019/lec/gdb_slides.pdf">MIT's sildes</a> about common-used gdb commands.</p>
-<p>Some are listed below:</p>
-<ul>
-<li><code>continue</code> or <code>c</code>, continue executing the program untill the next breakpoint or the end of program.</li>
-<li><code>step</code> or <code>s</code>, execute the program by one step, if this is a function call, step into it.</li>
-<li><code>next</code> or <code>n</code>, execute the program by one step without stepping into a function call.</li>
-<li><code>finish</code>, execute to the end of function.</li>
-<li><code>print &lt;expression&gt;</code> or <code>p &lt;expression&gt;</code>: print the value of expression.</li>
-<li><code>display &lt;expression&gt;</code>: automatically display the value of expression whenever stop.</li>
-<li><code>set &lt;variable&gt; = &lt;value&gt;</code> : modify the value of variable.</li>
-<li><code>backtrace</code> or <code>bt</code>: show the call stack.</li>
-<li><code>info frame</code>: show information about current frame.</li>
-<li><code>info locals</code>: how all local variables for current frame.</li>
-<li><code>list</code> or <code>l</code>: show the source code.</li>
-<li><code>list &lt;location&gt;</code>: show the source code at specific location.</li>
-</ul></div>
+<h2 id="what-to-do">What to do?</h2>
+<p>I believe you have had a relatively good understanding to xv6. Therefore, I wouldn't provide a step-by-step instructions for this lab. However, you can check <code>TODO:</code> symbols in the code to find what you are expected to finish first. </p>
+<p>The brief idea for this lab is implementing kernel thread support for xv6. You are not expected to write a new thread control block on your own, instead you can reuse <code>struct proc</code>. We have added two instance variables <code>thread_count</code> and <code>thread_id</code> in <code>struct proc</code>. They are enough for you to achieve thread allocation and memory management. However, you can/may need add more instance here to support complex management. </p>
+<p>There are 4 <code>TODO:</code> symbols in <code>proc.c</code>.</p>
+<ol>
+<li><code>allocthread()</code>, which is similar to <code>allocproc()</code>.</li>
+<li><code>freeproc()</code>, because we reuse <code>struct proc</code>, some modification should be added here to support thread. </li>
+<li><code>proc_pagetable()</code>, you can reuse this function for allocate a pagetable for thread. You can also implement a seperate function. Both methods are accepted. </li>
+<li><code>thread_freepagetable()</code>, the things should be freed for thread and process are different. Two major things are kernel stack and trapframe.</li>
+</ol>
+<p>In <code>trap.c</code>, you need to change <code>userret()</code> call. <strong>THIS PART IS DIFFICULT</strong>. You need to read some assembly code in <code>kernel/trampoline.S</code>. There are two functions in <code>trampoline.S</code>, one is for user space -&gt; kernel space, another is for kernel space -&gt; user space. Make sure you understand the modification in these two functions. </p>
+<p>The last thing you need to do is implementing <code>thread.c</code>-the thread library in user space. You are required to implement another lock here, which is usable in memory access for threads. You are not required to implement a <code>join()</code> function, but you can if you want. </p>
+<h2 id="requirments">Requirments:</h2>
+<p>The kernel thread you implement is expected supporting:</p>
+<ol>
+<li>Share memory space</li>
+<li>Memory safe</li>
+</ol>
+<p>The kernel thread you implement do <strong>NOT</strong> need:</p>
+<ol>
+<li>Share file descriptors.</li>
+<li><code>exit()</code> function like traditional Linux. Traditionally, any thread calls <code>exit()</code> would terminate the <strong>PROCESS</strong>. However, in this lab, a thread calls <code>exit()</code> will only terminate itself and don't affect other processes/threads. </li>
+</ol>
+<p>Besides the modification indicated in the source file, you will still need add/modify some code to make your code <strong>MEMORY SAFE</strong> and <strong>EXIT CORRECTLY</strong>. Make sure you free all memory allocated by <code>*alloc()</code> and also, all <strong>MEMORY SIZE VARs</strong> are correct. </p>
+<h2 id="grade">Grade</h2>
+<p>Some critical grading points:</p>
+<ol>
+<li>We won't directly test <code>exit()</code> function, however you still need to clarify how you change your code to achieve the resource maintainance for threads. </li>
+<li>Correct memory space shared among threads. </li>
+<li>Correct lock implementation.</li>
+<li>Memory safe</li>
+<li>Explanation about trampoline and trapframe in detail.</li>
+</ol></div>
             </div>
         </div>
 
