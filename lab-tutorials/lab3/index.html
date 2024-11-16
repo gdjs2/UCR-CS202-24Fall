@@ -108,6 +108,10 @@
               <ul class="nav flex-column">
               </ul>
             </li>
+            <li class="nav-item" data-bs-level="2"><a href="#test" class="nav-link">Test</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
             <li class="nav-item" data-bs-level="2"><a href="#requirments" class="nav-link">Requirments:</a>
               <ul class="nav flex-column">
               </ul>
@@ -146,6 +150,8 @@
 </ol>
 <p>In <code>trap.c</code>, you need to change <code>userret()</code> call. <strong>THIS PART IS DIFFICULT</strong>. You need to read some assembly code in <code>kernel/trampoline.S</code>. There are two functions in <code>trampoline.S</code>, one is for user space -&gt; kernel space, another is for kernel space -&gt; user space. Make sure you understand the modification in these two functions. </p>
 <p>The last thing you need to do is implementing <code>thread.c</code>-the thread library in user space. You are required to implement another lock here, which is usable in memory access for threads. You are not required to implement a <code>join()</code> function, but you can if you want. </p>
+<h2 id="test">Test</h2>
+<p>After you finish your kernel thread implementation, there is one user space program <code>kt_test</code> provided to test your implementaion. This user space program only tests whether the threads share the same memory space and its functionality. We would grade your work mainly based on this program. </p>
 <h2 id="requirments">Requirments:</h2>
 <p>The kernel thread you implement is expected supporting:</p>
 <ol>
