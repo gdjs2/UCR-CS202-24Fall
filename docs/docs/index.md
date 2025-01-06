@@ -8,7 +8,7 @@ Although we do not have an official **Lab Session**, you can try getting most of
 
 BTW, the time for my **office hours** would be:
 
-* Monday 2pm - 4pm @ [Zoom](https://ucr.zoom.us/j/91841068999?pwd=pgoHm11EtQ1nvmz70sfpQBTUJEDTam.1)
+* Monday 2pm - 3pm, 4pm - 5pm @ [Zoom](https://ucr.zoom.us/j/91841068999?pwd=pgoHm11EtQ1nvmz70sfpQBTUJEDTam.1)
 * Or @ WCH 110 by appointment with [email](mailto:zxiao033@ucr.edu)
 
 ## The Composition of Laboratory Session
@@ -25,6 +25,7 @@ Prior to (or some time after) each Lab release, I would publish an instruction t
 
 * Lab 1: [System Call Implementation Tutorial](lab-tutorials/lab1.md)
 * Lab 2: [Lottery and Stride Scheduling](lab-tutorials/lab2.md)
+* Lab 3: [Kernel Threads](lab-tutorials/lab3.md)
 * [Debugging Tips](./lab-tutorials/debug.md)
 
 ## Additional Links
